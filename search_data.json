@@ -1,15 +1,30 @@
----
-layout: null
----
 {
-  {% for post in site.posts %}
+  
 
-    "{{ post.url | slugify }}": {
-      "title": "{{ post.title | xml_escape }}",
-      "url": " {{ post.url | xml_escape }}",
-      "author": "{{ post.author | xml_escape }}",
-      "category": "{{ post.category | xml_escape }}"
+    "2015-11-16-another-day-html": {
+      "title": "Another Day",
+      "url": " /2015/11/16/another-day.html",
+      "author": "",
+      "category": ""
     }
-    {% unless forloop.last %},{% endunless %}
-  {% endfor %}
+    ,
+  
+
+    "2015-11-16-new-day-html": {
+      "title": "New Day",
+      "url": " /2015/11/16/new-day.html",
+      "author": "",
+      "category": ""
+    }
+    ,
+  
+
+    "jekyll-update-2015-11-16-welcome-to-jekyll-html": {
+      "title": "Welcome to Jekyll!",
+      "url": " /jekyll/update/2015/11/16/welcome-to-jekyll.html",
+      "author": "",
+      "category": ""
+    }
+    
+  
 }
