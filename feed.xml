@@ -6,8 +6,8 @@
 </description>
     <link>http://yourdomain.com/</link>
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 16 Nov 2015 22:53:56 -1000</pubDate>
-    <lastBuildDate>Mon, 16 Nov 2015 22:53:56 -1000</lastBuildDate>
+    <pubDate>Tue, 17 Nov 2015 16:53:15 -1000</pubDate>
+    <lastBuildDate>Tue, 17 Nov 2015 16:53:15 -1000</lastBuildDate>
     <generator>Jekyll v3.0.0</generator>
     
       <item>
@@ -17,9 +17,13 @@
 &lt;p&gt;Be patient and take your time&lt;/p&gt;
 </description>
         <pubDate>Mon, 16 Nov 2015 21:56:55 -1000</pubDate>
-        <link>http://yourdomain.com/2015/11/16/another-day.html</link>
-        <guid isPermaLink="true">http://yourdomain.com/2015/11/16/another-day.html</guid>
+        <link>http://yourdomain.com/next/thingy/2015/11/16/another-day.html</link>
+        <guid isPermaLink="true">http://yourdomain.com/next/thingy/2015/11/16/another-day.html</guid>
         
+        
+        <category>next</category>
+        
+        <category>thingy</category>
         
       </item>
     
@@ -31,9 +35,11 @@
 
 </description>
         <pubDate>Mon, 16 Nov 2015 14:04:34 -1000</pubDate>
-        <link>http://yourdomain.com/2015/11/16/new-day.html</link>
-        <guid isPermaLink="true">http://yourdomain.com/2015/11/16/new-day.html</guid>
+        <link>http://yourdomain.com/begin/2015/11/16/new-day.html</link>
+        <guid isPermaLink="true">http://yourdomain.com/begin/2015/11/16/new-day.html</guid>
         
+        
+        <category>begin</category>
         
       </item>
     
