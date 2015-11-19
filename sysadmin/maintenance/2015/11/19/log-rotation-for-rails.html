@@ -6,11 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>New Day</title>
-  <meta name="description" content="It’s a New Day">
+  <title>Log Rotation for Rails</title>
+  <meta name="description" content="Leveraing system utilities on a unix operating system simplifies log rotation for Rails applications. There are only a few configurations necessary to get th...">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="/begin/2015/11/16/new-day.html">
+  <link rel="canonical" href="/sysadmin/maintenance/2015/11/19/log-rotation-for-rails.html">
   <link rel="alternate" type="application/rss+xml" title="Design, Refactor, Reflect &amp; Repeat" href="/feed.xml">
 </head>
 
@@ -59,15 +59,40 @@
         <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline">New Day</h1>
-    <p class="post-meta"><time datetime="2015-11-16T14:04:34-10:00" itemprop="datePublished">Nov 16, 2015</time> • <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Stephane Liu</span></span></p>
+    <h1 class="post-title" itemprop="name headline">Log Rotation for Rails</h1>
+    <p class="post-meta"><time datetime="2015-11-19T11:04:40-10:00" itemprop="datePublished">Nov 19, 2015</time> • <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Stephane Liu</span></span></p>
   </header>
 
   <div class="post-content" itemprop="articleBody">
-    <h2 id="its-a-new-day">It’s a New Day</h2>
+    <p>Leveraing system utilities on a unix operating system simplifies log rotation for Rails applications. There are only a few configurations necessary to get this up and running.</p>
 
-<p>Let’s begin…</p>
+<p>The first step is to create a file in /etc/logrotate.d directory. Giving it the name of your application is a good idea. Then, open the file in vim or nano and add the following.</p>
 
+<pre><code class="language-bash">/home/deploy/APPNAME/shared/log/*.log {
+  daily
+  missingok
+  rotate 365
+  compress
+  delaycompress
+  notifempty
+  copytruncate
+  datext
+}
+</code></pre>
+<p>Options:</p>
+
+<ul>
+  <li><strong>daily</strong> - Rotate the log files each day. Alternatively, weekly or monthly could be used</li>
+  <li><strong>missingok</strong> - Ignore if the log file does not exist</li>
+  <li><strong>rotate 365</strong> - Only keep 365 days of logs around</li>
+  <li><strong>compress</strong> - GZip the log file on rotation</li>
+  <li><strong>delaycompress</strong> - Rotate the file one day, then compress it the next day. This minimize interference with Rails server.</li>
+  <li><strong>notifempty</strong> - Don’t rotate the file if the logs are empty</li>
+  <li><strong>copytruncate</strong> - Copy the log file then empty it. This insures that the log file Rails is writing to always exists because the file being modified does not change. If this is not done, you will need to add a post action to restart the Rails server.</li>
+  <li><strong>dateext</strong> - Append the date at the end of the file name instead of an the default incrementing number. (production.log-20151118). If you are testing log rotation, you will need to disable this option in order to generate multiple logrotation files on the same day.</li>
+</ul>
+
+<p><code>logrotate</code> runs daily via cron by default. View <code>/etc/cron.daily/logrotate</code> for more information.</p>
 
   </div>
 

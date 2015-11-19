@@ -1,14 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Your awesome title</title>
-    <description>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
+    <title>Design, Refactor, Reflect &amp;amp; Repeat</title>
+    <description>Software development is an iterative process of designing, problem solving, and reflection.  As good citizens, our communities should also share what we have learned.
 </description>
-    <link>http://yourdomain.com/</link>
-    <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 17 Nov 2015 16:53:15 -1000</pubDate>
-    <lastBuildDate>Tue, 17 Nov 2015 16:53:15 -1000</lastBuildDate>
+    <link>/</link>
+    <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Thu, 19 Nov 2015 12:20:17 -1000</pubDate>
+    <lastBuildDate>Thu, 19 Nov 2015 12:20:17 -1000</lastBuildDate>
     <generator>Jekyll v3.0.0</generator>
+    
+      <item>
+        <title>Log Rotation for Rails</title>
+        <description>&lt;p&gt;Leveraing system utilities on a unix operating system simplifies log rotation for Rails applications. There are only a few configurations necessary to get this up and running.&lt;/p&gt;
+
+&lt;p&gt;The first step is to create a file in /etc/logrotate.d directory. Giving it the name of your application is a good idea. Then, open the file in vim or nano and add the following.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;/home/deploy/APPNAME/shared/log/*.log {
+  daily
+  missingok
+  rotate 365
+  compress
+  delaycompress
+  notifempty
+  copytruncate
+  datext
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Options:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;daily&lt;/strong&gt; - Rotate the log files each day. Alternatively, weekly or monthly could be used&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;missingok&lt;/strong&gt; - Ignore if the log file does not exist&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;rotate 365&lt;/strong&gt; - Only keep 365 days of logs around&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;compress&lt;/strong&gt; - GZip the log file on rotation&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;delaycompress&lt;/strong&gt; - Rotate the file one day, then compress it the next day. This minimize interference with Rails server.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;notifempty&lt;/strong&gt; - Don’t rotate the file if the logs are empty&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;copytruncate&lt;/strong&gt; - Copy the log file then empty it. This insures that the log file Rails is writing to always exists because the file being modified does not change. If this is not done, you will need to add a post action to restart the Rails server.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;dateext&lt;/strong&gt; - Append the date at the end of the file name instead of an the default incrementing number. (production.log-20151118). If you are testing log rotation, you will need to disable this option in order to generate multiple logrotation files on the same day.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;logrotate&lt;/code&gt; runs daily via cron by default. View &lt;code&gt;/etc/cron.daily/logrotate&lt;/code&gt; for more information.&lt;/p&gt;
+</description>
+        <pubDate>Thu, 19 Nov 2015 11:04:40 -1000</pubDate>
+        <link>/sysadmin/maintenance/2015/11/19/log-rotation-for-rails.html</link>
+        <guid isPermaLink="true">/sysadmin/maintenance/2015/11/19/log-rotation-for-rails.html</guid>
+        
+        
+        <category>sysadmin</category>
+        
+        <category>maintenance</category>
+        
+      </item>
     
       <item>
         <title>Another Day</title>
@@ -17,8 +60,8 @@
 &lt;p&gt;Be patient and take your time&lt;/p&gt;
 </description>
         <pubDate>Mon, 16 Nov 2015 21:56:55 -1000</pubDate>
-        <link>http://yourdomain.com/next/thingy/2015/11/16/another-day.html</link>
-        <guid isPermaLink="true">http://yourdomain.com/next/thingy/2015/11/16/another-day.html</guid>
+        <link>/next/thingy/2015/11/16/another-day.html</link>
+        <guid isPermaLink="true">/next/thingy/2015/11/16/another-day.html</guid>
         
         
         <category>next</category>
@@ -35,8 +78,8 @@
 
 </description>
         <pubDate>Mon, 16 Nov 2015 14:04:34 -1000</pubDate>
-        <link>http://yourdomain.com/begin/2015/11/16/new-day.html</link>
-        <guid isPermaLink="true">http://yourdomain.com/begin/2015/11/16/new-day.html</guid>
+        <link>/begin/2015/11/16/new-day.html</link>
+        <guid isPermaLink="true">/begin/2015/11/16/new-day.html</guid>
         
         
         <category>begin</category>
@@ -61,8 +104,8 @@
 
 </description>
         <pubDate>Mon, 16 Nov 2015 14:00:02 -1000</pubDate>
-        <link>http://yourdomain.com/jekyll/update/2015/11/16/welcome-to-jekyll.html</link>
-        <guid isPermaLink="true">http://yourdomain.com/jekyll/update/2015/11/16/welcome-to-jekyll.html</guid>
+        <link>/jekyll/update/2015/11/16/welcome-to-jekyll.html</link>
+        <guid isPermaLink="true">/jekyll/update/2015/11/16/welcome-to-jekyll.html</guid>
         
         
         <category>jekyll</category>
