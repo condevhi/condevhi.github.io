@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Lessons Learned from Upgrading Redmine</title>
+  <meta name="description" content="Upgrading Redmine from 1.x to 3.x was a lot smoother than one would imagine.  Kudos to the Redmine team for making that possible.">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="/redmine/upgrade/2016/02/03/lessons-learned-from-upgrading-redmine.html">
+  <link rel="alternate" type="application/rss+xml" title="Design, Refactor, Reflect &amp; Repeat" href="/feed.xml">
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Design, Refactor, Reflect &amp; Repeat</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+          
+          <a class="page-link" href="/search.html">Search</a>
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Lessons Learned from Upgrading Redmine</h1>
+    <p class="post-meta"><time datetime="2016-02-03T15:02:02-10:00" itemprop="datePublished">Feb 3, 2016</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>Upgrading Redmine from <code>1.x</code> to <code>3.x</code> was a lot smoother than one would imagine.  Kudos to the Redmine team for making that possible.</p>
+
+<p>However, there were some hiccups (mainly due to our own customizations) so I’ll capture them here for posterity.</p>
+
+<h2 id="unknown-admin">Unknown Admin</h2>
+<p>Our Redmine admin account’s password has long since been lost, but luckily there is a way to reset that password:<br />
+<a href="http://www.redmine.org/projects/redmine/wiki/FAQ#Reset-password-lost-without-admin-redmine-account-but-with-admin-redmine-database-account">Redmine FAQ#Reset-password…</a></p>
+
+<p>The reason this is necessary is because we migrated our CAS plugin from <a href="https://github.com/Emergya/redmine_cas">Emergya’s redmine_cas</a> to <a href="https://github.com/ninech/redmine_cas">nine.ch ‘s redmine_cas</a>.  This name conflict led to quite a bit of confusion.  I am still not 100% sure that the original plugin was <a href="https://github.com/Emergya">Emergya’s</a> version.</p>
+
+<h2 id="cookie-overflow">Cookie Overflow</h2>
+<p>Certain users experienced <code>500</code> errors because they were approved for too many applications.  This is because the plugin tries to shove all of the CAS attributes into the session, including every single CAS group the user belongs to.  By default, Redmine/Rails uses cookies for sessions.</p>
+
+<p>To resolve the cookie overflow error, configure Redmine/Rails to use database sessions:<br />
+In <code>config/application.rb</code>, replace:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">config</span><span class="p">.</span><span class="nf">session_store</span> <span class="ss">:cookie_store</span><span class="p">,</span></code></pre></figure>
+
+<p>with</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">config</span><span class="p">.</span><span class="nf">session_store</span> <span class="ss">:active_record_store</span><span class="p">,</span></code></pre></figure>
+
+<p>and then integrating the <a href="https://github.com/rails/activerecord-session_store">Active Record Session</a> gem.</p>
+
+<h2 id="disappearing-files">Disappearing Files</h2>
+<p>Redmine stores file attachments on the filesystem under the <a href="https://github.com/redmine/redmine/tree/2a6637ed2ef05ad0770bb76094c67f230d2341f6/files"><code>/{install directory}/files/</code> folder</a> by <a href="https://github.com/redmine/redmine/blob/2a6637ed2ef05ad0770bb76094c67f230d2341f6/config/configuration.yml.example#L69-L76">default</a>.</p>
+
+<p>So we have to ensure those files persist across deployments.</p>
+
+<h2 id="mismatched-jruby">Mismatched JRuby</h2>
+<p>During the deployment, we encountered an issue where bundler could not find the gems that were in the deploy package.  The reason was because the application was using a different JRuby version than the operating system.</p>
+
+<p>The operating system’s JRuby was used to install the gems using this command:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">jruby -S bundle install --deployment</code></pre></figure>
+
+<p>The command left a <code>.bundle/config</code> file that was unintentionally picked up by the application.</p>
+
+<p>The OS JRuby installed the gems to it’s location, <code>vendor/gems/jruby-x.x</code> while the application was looking for the gems in it’s own location, <code>vendor/gems/jruby-y.y</code>.</p>
+
+<p>The reason the application used a different version of JRuby, was because warbler packaged that version with the application.  We will need to wait for warbler to be upgraded before both the application and OS JRuby can match.</p>
+
+<h2 id="database-mirage">Database Mirage</h2>
+<p>In our staging environment, I was trying to check the database migrations with:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">jruby -S bundle <span class="nb">exec </span>rake db:migrate:status</code></pre></figure>
+
+<p>but was getting a misleading access denied error.</p>
+
+<p>It turns out that the <code>rake</code> task was trying to hit the development database, I had to run this instead:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">set </span><span class="nv">RAILS_ENV</span><span class="o">=</span>production
+jruby -S bundle <span class="nb">exec </span>rake db:migrate:status</code></pre></figure>
+
+<h2 id="new-secrets">New Secrets</h2>
+<p>Just a note that Rails is now expecting all secret tokens to be located in <code>config/secrets.yml</code>.  There were no issues involving this during the upgrade.</p>
+
+<h2 id="no-rails-console">No Rails Console</h2>
+<p>Just another note.  I still am unable to get <code>rails console</code> to work on both staging and production.</p>
+
+
+  </div>
+
+</article>
+
+
+ <div id="disqus_thread"></div>
+   <script>
+  /**
+  *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+  *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+  */
+  /*
+  var disqus_config = function () {
+  this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+  this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+  };
+  */
+  (function() {  // DON'T EDIT BELOW THIS LINE
+  var d = document, s = d.createElement('script');
+
+  s.src = '//condevhi.disqus.com/embed.js';
+
+  s.setAttribute('data-timestamp', +new Date());
+  (d.head || d.body).appendChild(s);
+  })();
+  </script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Design, Refactor, Reflect &amp; Repeat</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>Design, Refactor, Reflect &amp; Repeat</li>
+          <li><a href="mailto:"></a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>Software development is an iterative process of designing, problem solving, and reflection.  As good citizens, our communities should also share what we have learned.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
